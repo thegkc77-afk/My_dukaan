@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Upload, X, Camera, Plus, Image as ImageIcon } from 'lucide-react';
 import { compressImageFile } from '../../utils/storage';
 import { SVG_PHOTOS } from '../../data/mockData';
+import { LiveCameraModal } from '../common/LiveCameraModal';
 
 export const ItemPhotoGallery = ({
   photos = [],
@@ -13,17 +14,17 @@ export const ItemPhotoGallery = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [showSampleSelector, setShowSampleSelector] = useState(false);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-  const handleFileChange = async (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+  const processFileList = async (fileList) => {
+    if (!fileList || fileList.length === 0) return;
 
     setErrorMsg('');
     setIsProcessing(true);
 
     try {
       const newPhotos = [...photos];
-      for (const file of files) {
+      for (const file of fileList) {
         if (newPhotos.length >= maxPhotos) break;
         if (!file.type.startsWith('image/')) {
           setErrorMsg('Only image files (PNG, JPG, WebP) are allowed');
@@ -43,6 +44,17 @@ export const ItemPhotoGallery = ({
     } finally {
       setIsProcessing(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    processFileList(files);
+  };
+
+  const handleCapturePhoto = (dataUrl) => {
+    if (photos.length < maxPhotos) {
+      onChange([...photos, dataUrl]);
     }
   };
 
@@ -81,17 +93,22 @@ export const ItemPhotoGallery = ({
         {!readOnly && photos.length < maxPhotos && (
           <div
             className="photo-upload-dropzone"
-            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            onClick={() => setIsCameraOpen(true)}
             style={{ height: '110px', padding: '0.5rem', margin: 0 }}
+            title="Click to open live camera and take photo"
           >
-            <Camera size={22} color="var(--primary)" />
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--primary)' }}>
+            <Camera size={24} color="var(--primary)" />
+            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary)' }}>
               {isProcessing ? 'Processing...' : 'Add Photo'}
+            </span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              Open Live Camera
             </span>
           </div>
         )}
       </div>
 
+      {/* Hidden file input for file uploads */}
       <input
         ref={fileInputRef}
         type="file"
@@ -106,16 +123,29 @@ export const ItemPhotoGallery = ({
       {!readOnly && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {photos.length} of {maxPhotos} photos uploaded (JPEG, PNG). Stored locally.
+            {photos.length} of {maxPhotos} photos recorded.
           </span>
-          <button
-            type="button"
-            className="btn btn-sm btn-secondary"
-            onClick={() => setShowSampleSelector(!showSampleSelector)}
-          >
-            <ImageIcon size={14} />
-            {showSampleSelector ? 'Hide Samples' : 'Choose Sample Photo'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            {photos.length < maxPhotos && (
+              <button
+                type="button"
+                className="btn btn-sm btn-secondary"
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                title="Upload image from computer files"
+              >
+                <Upload size={14} />
+                Upload from Files
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn btn-sm btn-secondary"
+              onClick={() => setShowSampleSelector(!showSampleSelector)}
+            >
+              <ImageIcon size={14} />
+              {showSampleSelector ? 'Hide Samples' : 'Choose Sample Photo'}
+            </button>
+          </div>
         </div>
       )}
 
@@ -186,6 +216,17 @@ export const ItemPhotoGallery = ({
           </div>
         </div>
       )}
+
+      {/* Live Camera Modal */}
+      <LiveCameraModal
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onCapture={handleCapturePhoto}
+        onUploadFiles={processFileList}
+        photos={photos}
+        maxPhotos={maxPhotos}
+        title="Live Item Camera"
+      />
     </div>
   );
 };
