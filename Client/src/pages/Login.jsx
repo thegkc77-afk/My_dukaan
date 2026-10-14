@@ -27,20 +27,32 @@ export const Login = () => {
   const [password, setPassword] = useState('123456');
   const [rememberMe, setRememberMe] = useState(true);
 
-  const handleSubmit = (e) => {
+  const [loginError, setLoginError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginError('');
+    setIsSubmitting(true);
+
     const ownerDisplayName = settings.ownerName
       ? `${settings.ownerName} (Owner)`
       : settings.staffMembers?.[0] || 'Ramesh Kumar (Owner)';
 
-    login({
-      name: ownerDisplayName,
-      shopName: shopName.trim() || settings.shopName || 'Repair Shop',
-      email: email.trim(),
-      role: 'Shop Owner',
-      loginTime: new Date().toISOString()
-    });
-    navigate('/', { replace: true });
+    try {
+      await login({
+        name: ownerDisplayName,
+        shopName: shopName.trim() || settings.shopName || 'Repair Shop',
+        email: email.trim(),
+        password: password.trim(),
+        role: 'Shop Owner'
+      });
+      navigate('/', { replace: true });
+    } catch (err) {
+      setLoginError(err.message || 'Invalid login credentials. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -171,13 +183,29 @@ export const Login = () => {
             </span>
           </div>
 
+          {loginError && (
+            <div style={{
+              padding: '0.65rem 0.85rem',
+              marginBottom: '1.25rem',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid var(--danger, #ef4444)',
+              borderRadius: '6px',
+              color: 'var(--danger, #ef4444)',
+              fontSize: '0.85rem',
+              fontWeight: 500
+            }}>
+              {loginError}
+            </div>
+          )}
+
           {/* Sign In Button */}
           <button
             type="submit"
             className="btn btn-primary"
             style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem' }}
+            disabled={isSubmitting}
           >
-            <span>Sign In to Dashboard</span>
+            <span>{isSubmitting ? 'Signing in...' : 'Sign In to Dashboard'}</span>
             <ArrowRight size={18} />
           </button>
         </form>

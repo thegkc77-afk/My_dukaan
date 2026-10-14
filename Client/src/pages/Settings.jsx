@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { ConfirmationModal } from '../components/common/ConfirmationModal';
 import { exportBackupJSON, importBackupJSON } from '../utils/storage';
+import { settingsAPI } from '../services/api';
 import {
   Settings as SettingsIcon,
   Store,
@@ -76,29 +77,49 @@ export const Settings = () => {
     updateSettings(form);
   };
 
-  const handleExportBackup = () => {
-    const dataStr = exportBackupJSON();
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `repair_shop_backup_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-    addToast('JSON backup exported successfully', 'success');
+  const handleExportBackup = async () => {
+    try {
+      const backupData = await settingsAPI.exportBackup();
+      const dataStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `repair_shop_backup_${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      addToast('Central database JSON backup exported successfully', 'success');
+    } catch {
+      // Fallback to local storage export
+      const dataStr = exportBackupJSON();
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `repair_shop_backup_${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      addToast('JSON backup exported locally', 'success');
+    }
   };
 
-  const handleImportFile = (e) => {
+  const handleImportFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const ok = importBackupJSON(event.target.result);
-      if (ok) {
-        addToast('Backup data imported successfully!', 'success');
-      } else {
-        addToast('Invalid backup file JSON', 'error');
+    reader.onload = async (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        await settingsAPI.importBackup(parsed);
+        addToast('Backup imported to central database successfully!', 'success');
+      } catch {
+        const ok = importBackupJSON(event.target.result);
+        if (ok) {
+          addToast('Backup data imported locally!', 'success');
+        } else {
+          addToast('Invalid backup file JSON', 'error');
+        }
       }
     };
     reader.readAsText(file);
