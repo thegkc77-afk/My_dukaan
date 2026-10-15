@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { Upload, X, Camera, Image as ImageIcon, FolderOpen } from 'lucide-react';
+import { Upload, X, Camera, Image as ImageIcon } from 'lucide-react';
 import { compressImageFile } from '../../utils/storage';
 import { SVG_PHOTOS } from '../../data/mockData';
 import { LiveCameraModal } from '../common/LiveCameraModal';
+import { Modal } from '../common/Modal';
 
 export const ItemPhotoGallery = ({
   photos = [],
@@ -11,10 +12,10 @@ export const ItemPhotoGallery = ({
   readOnly = false
 }) => {
   const fileInputRef = useRef(null);
-  const deviceCameraInputRef = useRef(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [showSampleSelector, setShowSampleSelector] = useState(false);
+  const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -46,7 +47,6 @@ export const ItemPhotoGallery = ({
     } finally {
       setIsProcessing(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
-      if (deviceCameraInputRef.current) deviceCameraInputRef.current.value = '';
     }
   };
 
@@ -91,112 +91,51 @@ export const ItemPhotoGallery = ({
     }
   };
 
-  const isMaxReached = photos.length >= maxPhotos;
-
   return (
     <div className="photo-uploader-container">
-      {/* 1. When NO photos added yet: Show Two Prominent Option Cards */}
-      {!readOnly && photos.length === 0 && (
-        <div className="photo-upload-options-grid">
-          {/* Option 1: Upload through File */}
+      {/* Photo Previews & Add Photo Dropzone */}
+      <div className="photo-previews-grid">
+        {photos.map((url, idx) => (
+          <div key={idx} className="photo-preview-item">
+            <img src={url} alt={`Item preview ${idx + 1}`} />
+            <span className="photo-order-badge">#{idx + 1}</span>
+            {!readOnly && (
+              <button
+                type="button"
+                className="photo-preview-remove"
+                onClick={() => handleRemovePhoto(idx)}
+                title="Remove photo"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        ))}
+
+        {/* Clean, compact dropzone to add photos */}
+        {!readOnly && photos.length < maxPhotos && (
           <div
-            className={`photo-option-card file-card ${isDragOver ? 'drag-over' : ''}`}
-            onClick={() => fileInputRef.current?.click()}
+            className={`photo-upload-dropzone ${isDragOver ? 'drag-over' : ''}`}
+            onClick={() => setShowChoiceModal(true)}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             role="button"
             tabIndex={0}
-            title="Upload photo from computer or device storage"
+            title="Click to add product photos"
           >
-            <div className="photo-option-badge">Option 1</div>
-            <div className="photo-option-icon file-icon">
-              <Upload size={24} />
-            </div>
-            <div className="photo-option-title">1. Upload through File</div>
-            <div className="photo-option-desc">
-              Select images from computer or mobile files, or drag & drop here
-            </div>
-            <div className="photo-option-action-tag">
-              <FolderOpen size={13} />
-              {isProcessing ? 'Processing...' : 'Browse Files'}
-            </div>
+            <Camera size={26} color="var(--primary)" />
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)' }}>
+              {isProcessing ? 'Processing...' : 'Add Product Photos'}
+            </span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              File or Camera
+            </span>
           </div>
+        )}
+      </div>
 
-          {/* Option 2: Upload through Camera */}
-          <div
-            className="photo-option-card camera-card"
-            onClick={() => setIsCameraOpen(true)}
-            role="button"
-            tabIndex={0}
-            title="Take photo using camera or webcam"
-          >
-            <div className="photo-option-badge">Option 2</div>
-            <div className="photo-option-icon camera-icon">
-              <Camera size={24} />
-            </div>
-            <div className="photo-option-title">2. Upload through Camera</div>
-            <div className="photo-option-desc">
-              Take live snapshots using your connected camera or webcam
-            </div>
-            <div className="photo-option-action-tag">
-              <Camera size={13} />
-              Open Live Camera
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 2. Photo Previews Grid (Visible when at least 1 photo exists or in readOnly mode) */}
-      {(photos.length > 0 || readOnly) && (
-        <div className="photo-previews-grid">
-          {photos.map((url, idx) => (
-            <div key={idx} className="photo-preview-item">
-              <img src={url} alt={`Item preview ${idx + 1}`} />
-              <span className="photo-order-badge">#{idx + 1}</span>
-              {!readOnly && (
-                <button
-                  type="button"
-                  className="photo-preview-remove"
-                  onClick={() => handleRemovePhoto(idx)}
-                  title="Remove this photo"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          ))}
-
-          {/* If more photos can be added, show 2 compact action tiles inside the grid */}
-          {!readOnly && !isMaxReached && (
-            <>
-              {/* Option 1: File Tile */}
-              <div
-                className="photo-grid-tile file-tile"
-                onClick={() => fileInputRef.current?.click()}
-                title="1. Upload through File"
-              >
-                <Upload size={20} color="var(--primary)" />
-                <span className="photo-grid-tile-label">1. File</span>
-                <span className="photo-grid-tile-sub">Upload image</span>
-              </div>
-
-              {/* Option 2: Camera Tile */}
-              <div
-                className="photo-grid-tile camera-tile"
-                onClick={() => setIsCameraOpen(true)}
-                title="2. Upload through Camera"
-              >
-                <Camera size={20} color="#059669" />
-                <span className="photo-grid-tile-label">2. Camera</span>
-                <span className="photo-grid-tile-sub">Take photo</span>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Hidden file input for file upload (Option 1) */}
+      {/* Hidden file input for file uploads */}
       <input
         ref={fileInputRef}
         type="file"
@@ -206,50 +145,15 @@ export const ItemPhotoGallery = ({
         onChange={handleFileChange}
       />
 
-      {/* Hidden file input for direct device camera capture (Option 2 fallback) */}
-      <input
-        ref={deviceCameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: 'none' }}
-        onChange={handleFileChange}
-      />
-
       {errorMsg && <div className="form-error">{errorMsg}</div>}
 
-      {/* Bottom Action Toolbar */}
+      {/* Bottom helper bar */}
       {!readOnly && (
-        <div className="photo-actions-toolbar">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.35rem' }}>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-            {photos.length} of {maxPhotos} photos recorded {isMaxReached && '(Max limit reached)'}
+            {photos.length} of {maxPhotos} photos recorded.
           </span>
-
-          <div className="photo-actions-buttons-group">
-            {!isMaxReached && (
-              <>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-file-upload"
-                  onClick={() => fileInputRef.current?.click()}
-                  title="Upload from files"
-                >
-                  <Upload size={14} />
-                  1. Upload through File
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-sm btn-camera-upload"
-                  onClick={() => setIsCameraOpen(true)}
-                  title="Upload through Camera"
-                >
-                  <Camera size={14} />
-                  2. Upload through Camera
-                </button>
-              </>
-            )}
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <button
               type="button"
               className="btn btn-sm btn-secondary"
@@ -275,7 +179,7 @@ export const ItemPhotoGallery = ({
           }}
         >
           <div style={{ fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
-            Select a sample item photo to simulate camera capture:
+            Select a sample item photo to simulate shop camera:
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '0.5rem' }}>
             <button
@@ -330,6 +234,64 @@ export const ItemPhotoGallery = ({
           </div>
         </div>
       )}
+
+      {/* Choice Modal: 1. Upload through File vs 2. Upload through Camera */}
+      <Modal
+        isOpen={showChoiceModal}
+        onClose={() => setShowChoiceModal(false)}
+        title="Add Product Photos"
+        size="md"
+      >
+        <div className="add-photo-choice-container">
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+            Select how you would like to add photos for this product:
+          </p>
+
+          <div className="add-photo-choice-grid">
+            {/* Option 1: File */}
+            <div
+              className="add-photo-choice-card file-choice"
+              onClick={() => {
+                setShowChoiceModal(false);
+                fileInputRef.current?.click();
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="choice-card-icon file-icon">
+                <Upload size={28} />
+              </div>
+              <div className="choice-card-badge">Option 1</div>
+              <h4 className="choice-card-title">1. Upload through File</h4>
+              <p className="choice-card-desc">
+                Browse and select photo(s) from your computer or mobile files
+              </p>
+              <span className="choice-card-btn">Browse Files</span>
+            </div>
+
+            {/* Option 2: Camera */}
+            <div
+              className="add-photo-choice-card camera-choice"
+              onClick={() => {
+                setShowChoiceModal(false);
+                setIsCameraOpen(true);
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="choice-card-icon camera-icon">
+                <Camera size={28} />
+              </div>
+              <div className="choice-card-badge">Option 2</div>
+              <h4 className="choice-card-title">2. Upload through Camera</h4>
+              <p className="choice-card-desc">
+                Take live photo(s) using your connected camera or webcam
+              </p>
+              <span className="choice-card-btn camera-btn">Open Camera</span>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       {/* Live Camera Modal */}
       <LiveCameraModal

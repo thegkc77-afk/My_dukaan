@@ -429,7 +429,7 @@
 .photo-upload-dropzone {
   border: 2px dashed var(--border-color);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1rem;
+  height: 110px;
   text-align: center;
   cursor: pointer;
   background-color: #FAFAFC;
@@ -439,190 +439,20 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
+  padding: 0.5rem;
+  user-select: none;
 }
 
 .photo-upload-dropzone:hover {
   border-color: var(--primary);
   background-color: var(--primary-light);
-}
-
-/* Two-Option Upload Cards (Option 1: File, Option 2: Camera) */
-.photo-upload-options-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.photo-option-card {
-  position: relative;
-  border: 1.5px dashed var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1rem 0.85rem;
-  background-color: #FAFAFC;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.5rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-}
-
-.photo-option-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
-.photo-option-card.file-card {
-  border-color: #CBD5E1;
-}
-
-.photo-option-card.file-card:hover,
-.photo-option-card.file-card.drag-over {
+.photo-upload-dropzone.drag-over {
   border-color: var(--primary);
   background-color: #EFF6FF;
-}
-
-.photo-option-card.camera-card {
-  border-color: #CBD5E1;
-}
-
-.photo-option-card.camera-card:hover {
-  border-color: #059669;
-  background-color: #ECFDF5;
-}
-
-.photo-option-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  background: #E2E8F0;
-  color: #475569;
-}
-
-.file-card .photo-option-badge {
-  background: #DBEAFE;
-  color: #1D4ED8;
-}
-
-.camera-card .photo-option-badge {
-  background: #D1FAE5;
-  color: #065F46;
-}
-
-.photo-option-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.25rem;
-  transition: transform 0.2s ease;
-}
-
-.photo-option-card:hover .photo-option-icon {
-  transform: scale(1.08);
-}
-
-.file-icon {
-  background-color: #DBEAFE;
-  color: #2563EB;
-}
-
-.camera-icon {
-  background-color: #D1FAE5;
-  color: #059669;
-}
-
-.photo-option-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.photo-option-desc {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  line-height: 1.3;
-}
-
-.photo-option-action-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 0.25rem 0.6rem;
-  border-radius: var(--radius-sm);
-  margin-top: 0.25rem;
-}
-
-.file-card .photo-option-action-tag {
-  background: #EFF6FF;
-  color: #2563EB;
-  border: 1px solid #BFDBFE;
-}
-
-.camera-card .photo-option-action-tag {
-  background: #ECFDF5;
-  color: #059669;
-  border: 1px solid #A7F3D0;
-}
-
-/* Compact Grid Action Tiles (when photos already exist in gallery) */
-.photo-grid-tile {
-  height: 110px;
-  border-radius: var(--radius-md);
-  border: 1.5px dashed var(--border-color);
-  background-color: #FAFAFC;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  cursor: pointer;
-  padding: 0.35rem;
-  text-align: center;
-  transition: all var(--transition-fast);
-  user-select: none;
-}
-
-.photo-grid-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-}
-
-.photo-grid-tile.file-tile:hover {
-  border-color: var(--primary);
-  background-color: #EFF6FF;
-  color: var(--primary);
-}
-
-.photo-grid-tile.camera-tile:hover {
-  border-color: #059669;
-  background-color: #ECFDF5;
-  color: #059669;
-}
-
-.photo-grid-tile-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.photo-grid-tile-sub {
-  font-size: 0.63rem;
-  color: var(--text-muted);
 }
 
 /* Photo Order Badges */
@@ -639,45 +469,132 @@
   backdrop-filter: blur(2px);
 }
 
-/* Action Toolbar */
-.photo-actions-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.35rem;
-  padding: 0.5rem 0.75rem;
-  background: #F8FAFC;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+/* Add Photo Choice Modal Styles (Clean Modal with 2 options: File vs Camera) */
+.add-photo-choice-container {
+  padding: 0.5rem 0;
 }
 
-.photo-actions-buttons-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+.add-photo-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
-.btn-file-upload {
+@media (max-width: 580px) {
+  .add-photo-choice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.add-photo-choice-card {
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1rem;
   background-color: #FFFFFF;
-  border: 1px solid #BFDBFE;
-  color: #1D4ED8;
-  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
 }
 
-.btn-file-upload:hover {
+.add-photo-choice-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.add-photo-choice-card.file-choice:hover {
+  border-color: var(--primary);
   background-color: #EFF6FF;
-  border-color: #2563EB;
-  color: #1E40AF;
 }
 
-.btn-camera-upload {
-  background-color: #059669;
-  border: 1px solid #059669;
-  color: #FFFFFF;
+.add-photo-choice-card.camera-choice:hover {
+  border-color: #059669;
+  background-color: #ECFDF5;
+}
+
+.choice-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.add-photo-choice-card:hover .choice-card-icon {
+  transform: scale(1.08);
+}
+
+.choice-card-icon.file-icon {
+  background-color: #DBEAFE;
+  color: #2563EB;
+}
+
+.choice-card-icon.camera-icon {
+  background-color: #D1FAE5;
+  color: #059669;
+}
+
+.choice-card-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 0.25rem;
+}
+
+.file-choice .choice-card-badge {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.camera-choice .choice-card-badge {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.choice-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.choice-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.choice-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
   font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.25rem;
+}
+
+.file-choice .choice-card-btn {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+.camera-choice .choice-card-btn {
+  background: #059669;
+  color: #FFFFFF;
 }
 
 .btn-camera-upload:hover {
