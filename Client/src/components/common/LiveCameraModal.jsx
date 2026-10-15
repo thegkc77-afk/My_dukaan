@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Camera,
   CameraOff,
@@ -23,6 +24,7 @@ export const LiveCameraModal = ({
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const fileInputRef = useRef(null);
+  const cameraFileInputRef = useRef(null);
 
   // States: 'prompting' | 'streaming' | 'denied' | 'not_found' | 'unsupported' | 'error'
   const [cameraState, setCameraState] = useState('prompting');
@@ -219,8 +221,6 @@ export const LiveCameraModal = ({
     startCamera(nextMode);
   };
 
-  const cameraFileInputRef = useRef(null);
-
   // Capture current frame from live video
   const handleCapturePhoto = () => {
     if (photos.length >= maxPhotos) {
@@ -287,7 +287,7 @@ export const LiveCameraModal = ({
 
   const isMaxReached = photos.length >= maxPhotos;
 
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={handleClose}>
       <div
         className="modal-content modal-lg camera-modal-container"
@@ -587,6 +587,7 @@ export const LiveCameraModal = ({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

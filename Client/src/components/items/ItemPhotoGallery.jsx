@@ -259,13 +259,15 @@ export const ItemPhotoGallery = ({
               tabIndex={0}
             >
               <div className="choice-card-icon file-icon">
-                <Upload size={28} />
+                <Upload size={26} />
               </div>
-              <div className="choice-card-badge">Option 1</div>
-              <h4 className="choice-card-title">1. Upload through File</h4>
-              <p className="choice-card-desc">
-                Browse and select photo(s) from your computer or mobile files
-              </p>
+              <div className="choice-card-content">
+                <div className="choice-card-badge">Option 1</div>
+                <h4 className="choice-card-title">1. Upload through File</h4>
+                <p className="choice-card-desc">
+                  Browse and select photo(s) from your computer or phone
+                </p>
+              </div>
               <span className="choice-card-btn">Browse Files</span>
             </div>
 
@@ -280,13 +282,15 @@ export const ItemPhotoGallery = ({
               tabIndex={0}
             >
               <div className="choice-card-icon camera-icon">
-                <Camera size={28} />
+                <Camera size={26} />
               </div>
-              <div className="choice-card-badge">Option 2</div>
-              <h4 className="choice-card-title">2. Upload through Camera</h4>
-              <p className="choice-card-desc">
-                Take live photo(s) using your connected camera or webcam
-              </p>
+              <div className="choice-card-content">
+                <div className="choice-card-badge">Option 2</div>
+                <h4 className="choice-card-title">2. Upload through Camera</h4>
+                <p className="choice-card-desc">
+                  Take live photo(s) using your connected camera or webcam
+                </p>
+              </div>
               <span className="choice-card-btn camera-btn">Open Camera</span>
             </div>
           </div>
