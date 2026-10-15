@@ -510,7 +510,7 @@ export const CreateOrder = () => {
           </div>
 
           {/* Form Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+          <div className="form-actions-bar">
             <button
               type="button"
               className="btn btn-secondary"
@@ -808,7 +808,7 @@ export const CreateOrder = () => {
           </div>
 
           {/* Form Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+          <div className="form-actions-bar">
             <button
               type="button"
               className="btn btn-secondary"

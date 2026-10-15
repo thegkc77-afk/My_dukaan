@@ -389,14 +389,17 @@
   z-index: 35;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive Breakpoints */
 @media (max-width: 1024px) {
   .app-sidebar {
     transform: translateX(-100%);
+    width: 270px;
+    max-width: 82vw;
   }
 
   .app-sidebar.open {
     transform: translateX(0);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
   }
 
   .sidebar-overlay.open {
@@ -409,14 +412,46 @@
 
   .mobile-menu-btn {
     display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .page-container {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-topbar {
+    padding: 0 1rem;
+    height: 60px;
+  }
+
+  .page-container {
+    padding: 1rem 0.85rem;
+  }
+
+  .topbar-left {
+    max-width: 320px;
   }
 }
 
 @media (max-width: 640px) {
+  .app-topbar {
+    padding: 0 0.75rem;
+    height: 56px;
+  }
+
+  .topbar-left {
+    gap: 0.5rem;
+    max-width: none;
+    flex: 1;
+  }
+
+  .topbar-right {
+    gap: 0.4rem;
+  }
+
   .topbar-date {
     display: none;
   }
@@ -425,16 +460,73 @@
     display: none;
   }
 
+  .staff-menu-btn {
+    padding: 0.25rem;
+    border: none;
+  }
+
+  .page-container {
+    padding: 0.85rem 0.65rem;
+  }
+
   .page-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  .page-description {
+    font-size: 0.8rem;
+    line-height: 1.35;
   }
 
   .page-actions {
     width: 100%;
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
   }
 
   .page-actions .btn {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 130px;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.82rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-search-form {
+    max-width: 180px;
+  }
+
+  .topbar-search-input {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.5rem 0.4rem 1.85rem;
+  }
+
+  .topbar-search-icon {
+    left: 0.55rem;
+    width: 14px;
+    height: 14px;
+  }
+
+  .page-actions {
+    flex-direction: column;
+  }
+
+  .page-actions .btn {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .page-container {
+    padding: 0.75rem 0.5rem;
   }
 }

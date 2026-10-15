@@ -136,7 +136,7 @@ export const RepairOrderDetails = () => {
 
         <div className="card-body">
           {/* Photos and Core Info Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 360px) 1fr', gap: '1.75rem' }}>
+          <div className="order-details-grid">
             {/* Left: Photos display */}
             <div>
               <div

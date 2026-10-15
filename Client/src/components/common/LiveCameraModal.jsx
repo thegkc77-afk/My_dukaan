@@ -32,6 +32,27 @@ export const LiveCameraModal = ({
   const [isFlashing, setIsFlashing] = useState(false);
   const [sessionCaptures, setSessionCaptures] = useState([]);
 
+  const playShutterSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.09);
+    } catch {
+      // Audio autoplay policy or not supported
+    }
+  };
+
   // Safely stop any active stream tracks
   const stopStream = useCallback(() => {
     if (streamRef.current) {
@@ -58,7 +79,7 @@ export const LiveCameraModal = ({
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setCameraState('unsupported');
       setErrorMessage(
-        'Live camera access is not supported by this browser or requires a secure connection (HTTPS / localhost).'
+        'Live camera stream is not supported by this browser or requires a secure connection (HTTPS / localhost).'
       );
       return;
     }
@@ -73,18 +94,19 @@ export const LiveCameraModal = ({
         // EnumerateDevices might fail if permissions aren't granted yet; ignore
       }
 
-      // First try with preferred facingMode
+      // First try with preferred facingMode and resolution
       let stream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
-            facingMode: { ideal: mode },
+            facingMode: mode ? { ideal: mode } : undefined,
             width: { ideal: 1280 },
             height: { ideal: 720 }
           },
           audio: false
         });
       } catch (constraintErr) {
+        console.warn('Ideal video constraints failed, trying basic video:true', constraintErr);
         // Fallback to basic video constraint if ideal facingMode fails
         stream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -94,18 +116,41 @@ export const LiveCameraModal = ({
 
       streamRef.current = stream;
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        // Wait for video metadata to load before playing
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current
-            ?.play()
-            .then(() => setCameraState('streaming'))
-            .catch((playErr) => {
-              console.error('Failed to play video stream:', playErr);
-              setCameraState('streaming');
-            });
+      const video = videoRef.current;
+      if (video) {
+        video.srcObject = stream;
+
+        let isStreamingActivated = false;
+        const markStreaming = () => {
+          if (!isStreamingActivated) {
+            isStreamingActivated = true;
+            setCameraState('streaming');
+          }
         };
+
+        video.onloadedmetadata = () => {
+          video
+            ?.play()
+            .then(markStreaming)
+            .catch(() => markStreaming());
+        };
+
+        video.oncanplay = markStreaming;
+        video.onloadeddata = markStreaming;
+        video.onplaying = markStreaming;
+
+        // Attempt playback immediately
+        video
+          ?.play()
+          .then(markStreaming)
+          .catch(() => {});
+
+        // Safety fallback timer: if tracks are active, force streaming state after 650ms
+        setTimeout(() => {
+          if (stream.active && stream.getVideoTracks().some((t) => t.readyState === 'live')) {
+            markStreaming();
+          }
+        }, 650);
       } else {
         setCameraState('streaming');
       }
@@ -114,7 +159,7 @@ export const LiveCameraModal = ({
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setCameraState('denied');
         setErrorMessage(
-          'Camera access was denied. Please allow camera permissions in your browser to take live photos.'
+          'Camera access was denied. Please allow camera permissions in your browser or use the native device camera / file upload below.'
         );
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
         setCameraState('not_found');
@@ -174,6 +219,8 @@ export const LiveCameraModal = ({
     startCamera(nextMode);
   };
 
+  const cameraFileInputRef = useRef(null);
+
   // Capture current frame from live video
   const handleCapturePhoto = () => {
     if (photos.length >= maxPhotos) {
@@ -184,6 +231,9 @@ export const LiveCameraModal = ({
     if (!video || !video.videoWidth || !video.videoHeight) {
       return;
     }
+
+    // Play tactile camera click audio
+    playShutterSound();
 
     // Trigger visual flash animation
     setIsFlashing(true);
@@ -202,7 +252,7 @@ export const LiveCameraModal = ({
       }
 
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
 
       setSessionCaptures((prev) => [...prev, dataUrl]);
       onCapture(dataUrl);
@@ -215,6 +265,13 @@ export const LiveCameraModal = ({
   const handleTriggerFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  // Trigger native device camera
+  const handleTriggerNativeCamera = () => {
+    if (cameraFileInputRef.current) {
+      cameraFileInputRef.current.click();
     }
   };
 
@@ -276,7 +333,15 @@ export const LiveCameraModal = ({
                 <ShieldAlert size={16} />
                 <span>Camera feed is processed directly inside your browser. No video is recorded.</span>
               </div>
-              <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem' }}>
+              <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={handleTriggerNativeCamera}
+                >
+                  <Camera size={14} />
+                  Take Photo (Device Camera)
+                </button>
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
@@ -311,10 +376,10 @@ export const LiveCameraModal = ({
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() => startCamera(facingMode)}
+                  onClick={handleTriggerNativeCamera}
                 >
-                  <RefreshCw size={15} />
-                  Retry Camera
+                  <Camera size={15} />
+                  Take with Device Camera
                 </button>
                 <button
                   type="button"
@@ -323,6 +388,14 @@ export const LiveCameraModal = ({
                 >
                   <Upload size={15} />
                   Upload from Files
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => startCamera(facingMode)}
+                >
+                  <RefreshCw size={15} />
+                  Retry Camera
                 </button>
                 <button
                   type="button"
@@ -348,10 +421,10 @@ export const LiveCameraModal = ({
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() => startCamera(facingMode)}
+                  onClick={handleTriggerNativeCamera}
                 >
-                  <RefreshCw size={15} />
-                  Retry
+                  <Camera size={15} />
+                  Take with Device Camera
                 </button>
                 <button
                   type="button"
@@ -360,6 +433,14 @@ export const LiveCameraModal = ({
                 >
                   <Upload size={15} />
                   Upload from Files
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => startCamera(facingMode)}
+                >
+                  <RefreshCw size={15} />
+                  Retry
                 </button>
               </div>
             </div>
@@ -430,12 +511,22 @@ export const LiveCameraModal = ({
             )}
           </div>
 
-          {/* Hidden File Input for fallback */}
+          {/* Hidden File Input for files fallback */}
           <input
             ref={fileInputRef}
             type="file"
             accept="image/*"
             multiple
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+
+          {/* Hidden Camera Input for direct device camera capture */}
+          <input
+            ref={cameraFileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
             style={{ display: 'none' }}
             onChange={handleFileChange}
           />

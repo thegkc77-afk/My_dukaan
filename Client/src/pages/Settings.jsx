@@ -233,7 +233,7 @@ export const Settings = () => {
             Staff members who can accept repairs, conduct tagless verifications, and authorize handovers.
           </p>
 
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <div className="settings-input-group">
             <input
               type="text"
               className="form-control"
@@ -276,7 +276,7 @@ export const Settings = () => {
             <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Item Categories</h3>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <div className="settings-input-group">
             <input
               type="text"
               className="form-control"
@@ -313,8 +313,8 @@ export const Settings = () => {
         </div>
 
         {/* Save Settings Button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
-          <button type="submit" className="btn btn-primary btn-lg">
+        <div className="form-actions-bar" style={{ marginBottom: '2rem' }}>
+          <button type="submit" className="btn btn-primary btn-lg" style={{ minWidth: '160px' }}>
             <Save size={18} />
             Save Changes
           </button>
@@ -330,7 +330,7 @@ export const Settings = () => {
           All data is saved in your browser's persistent storage. Export backups to prevent loss across devices or reset to sample data anytime.
         </p>
 
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div className="settings-actions-group">
           <button
             type="button"
             className="btn btn-secondary"

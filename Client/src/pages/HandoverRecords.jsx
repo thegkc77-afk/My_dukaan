@@ -135,7 +135,7 @@ export const HandoverRecords = () => {
           </div>
 
           <div className="card-body" style={{ padding: '1rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
               {readyOrders.map((order) => (
                 <div
                   key={order.id}

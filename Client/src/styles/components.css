@@ -8,6 +8,50 @@
   margin-bottom: 1.5rem;
 }
 
+@media (max-width: 1024px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .stat-card {
+    padding: 0.75rem 0.65rem;
+    gap: 0.5rem;
+  }
+  .stat-card-icon-wrapper {
+    width: 36px;
+    height: 36px;
+  }
+  .stat-card-value {
+    font-size: 1.25rem;
+  }
+  .stat-card-title {
+    font-size: 0.7rem;
+  }
+  .stat-card-subtitle {
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .stat-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -141,6 +185,12 @@
   gap: 0.2rem;
   overflow-x: auto;
   max-width: 100%;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .filter-tab-btn {
@@ -183,11 +233,35 @@
   color: var(--primary);
 }
 
+@media (max-width: 768px) {
+  .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .filter-tabs {
+    width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+}
+
 /* Item Card Grid */
 .item-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .item-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
 }
 
 .item-card {
@@ -355,7 +429,7 @@
 .photo-upload-dropzone {
   border: 2px dashed var(--border-color);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 1.25rem 1rem;
   text-align: center;
   cursor: pointer;
   background-color: #FAFAFC;
@@ -364,12 +438,286 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .photo-upload-dropzone:hover {
   border-color: var(--primary);
   background-color: var(--primary-light);
+}
+
+/* Two-Option Upload Cards (Option 1: File, Option 2: Camera) */
+.photo-upload-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.photo-option-card {
+  position: relative;
+  border: 1.5px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem 0.85rem;
+  background-color: #FAFAFC;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.photo-option-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.photo-option-card.file-card {
+  border-color: #CBD5E1;
+}
+
+.photo-option-card.file-card:hover,
+.photo-option-card.file-card.drag-over {
+  border-color: var(--primary);
+  background-color: #EFF6FF;
+}
+
+.photo-option-card.camera-card {
+  border-color: #CBD5E1;
+}
+
+.photo-option-card.camera-card:hover {
+  border-color: #059669;
+  background-color: #ECFDF5;
+}
+
+.photo-option-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.file-card .photo-option-badge {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.camera-card .photo-option-badge {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.photo-option-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.photo-option-card:hover .photo-option-icon {
+  transform: scale(1.08);
+}
+
+.file-icon {
+  background-color: #DBEAFE;
+  color: #2563EB;
+}
+
+.camera-icon {
+  background-color: #D1FAE5;
+  color: #059669;
+}
+
+.photo-option-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.photo-option-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.photo-option-action-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.25rem;
+}
+
+.file-card .photo-option-action-tag {
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+}
+
+.camera-card .photo-option-action-tag {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+}
+
+/* Compact Grid Action Tiles (when photos already exist in gallery) */
+.photo-grid-tile {
+  height: 110px;
+  border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border-color);
+  background-color: #FAFAFC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.35rem;
+  text-align: center;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.photo-grid-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.photo-grid-tile.file-tile:hover {
+  border-color: var(--primary);
+  background-color: #EFF6FF;
+  color: var(--primary);
+}
+
+.photo-grid-tile.camera-tile:hover {
+  border-color: #059669;
+  background-color: #ECFDF5;
+  color: #059669;
+}
+
+.photo-grid-tile-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.photo-grid-tile-sub {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+}
+
+/* Photo Order Badges */
+.photo-order-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(15, 23, 42, 0.7);
+  color: #FFFFFF;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+}
+
+/* Action Toolbar */
+.photo-actions-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.photo-actions-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-file-upload {
+  background-color: #FFFFFF;
+  border: 1px solid #BFDBFE;
+  color: #1D4ED8;
+  font-weight: 600;
+}
+
+.btn-file-upload:hover {
+  background-color: #EFF6FF;
+  border-color: #2563EB;
+  color: #1E40AF;
+}
+
+.btn-camera-upload {
+  background-color: #059669;
+  border: 1px solid #059669;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.btn-camera-upload:hover {
+  background-color: #047857;
+  border-color: #047857;
+}
+
+@media (max-width: 640px) {
+  .photo-actions-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding: 0.65rem;
+  }
+
+  .photo-actions-buttons-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.45rem;
+  }
+
+  .photo-actions-buttons-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .photo-upload-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-previews-grid {
+    grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+    gap: 0.4rem;
+  }
+
+  .photo-preview-item, .photo-grid-tile {
+    height: 90px;
+  }
 }
 
 /* Verification Checklist Component */
@@ -517,6 +865,41 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    max-height: 94vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.05rem;
+  }
+
+  .modal-body {
+    padding: 1rem 0.85rem;
+  }
+
+  .modal-footer {
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .modal-footer .btn {
+    flex: 1 1 auto;
+    min-width: 110px;
+    justify-content: center;
+  }
 }
 
 /* Empty State */
@@ -859,7 +1242,13 @@
 }
 
 .camera-viewfinder-container.hidden {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: -10;
 }
 
 .camera-video-element {

@@ -395,17 +395,7 @@ export const CreateRepairOrder = () => {
         </div>
 
         {/* Buttons */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: '0.85rem',
-            paddingTop: '1.25rem',
-            borderTop: '1px solid var(--border-color)',
-            flexWrap: 'wrap'
-          }}
-        >
+        <div className="form-actions-bar">
           <button
             type="button"
             className="btn btn-secondary"
